@@ -71,32 +71,6 @@ describe('Coleccion de Notas [/notas]', function() {
     })
   })
 
-  describe('GET obtengo una NOTA', function () {
-    it('deberia obtener una nota existente', function (done) {
-      var data = {
-        "nota": {
-          "title": "MI NOTA #node #node-pro",
-          "description": "Introduccion a clase",
-          "type": "js",
-          "body": "soy el cuerpo de json"
-        }
-      }
-      var id
-
-      async.waterfall([
-        function (callback) {
-          createNote(data, callback)
-        },
-        function (res, callback) {
-          getNote(res, callback)
-        },
-        function (res, callback){
-          assertions(res, data, callback)
-        }
-      ], done)
-    })    
-  })
-
   describe('PUT Modificar una nota', function () {
     it('deberia obtener una nota y modificarla', function (done) {
       var data = {
@@ -176,6 +150,55 @@ describe('Coleccion de Notas [/notas]', function() {
             .end(callback)
         }
       ], done)
+    })
+  })
+
+  describe('GET obtengo una NOTA', function () {
+    var data = {
+      "nota": {
+        "title": "MI NOTA #node #node-pro",
+        "description": "Introduccion a clase",
+        "type": "js",
+        "body": "soy el cuerpo de json"
+      }
+    }
+
+    it('deberia obtener una nota existente', function (done) {
+      var id
+
+      async.waterfall([
+        function (callback) {
+          createNote(data, callback)
+        },
+        function (res, callback) {
+          getNote(res, callback)
+        },
+        function (res, callback){
+          assertions(res, data, callback)
+        }
+      ], done)
+    })
+
+    it('deberia obtener todas las notas', function (done) {
+
+      async.waterfall([
+        function (callback) {
+          createNote(data, callback)
+          createNote(data, callback)
+        }
+      ], done())
+
+      request
+        .get('/notas/')
+        .expect(200)
+        .expect('Content-Type', /application\/json/)
+        .then(function (res) {
+          var body = res.body
+          expect(body).to.have.property('notas')
+
+          var bodyLength = Object.keys(body.notas).length
+          expect(bodyLength).above(0)
+        })
     })
   })
 
