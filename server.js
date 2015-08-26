@@ -10,7 +10,6 @@ var bodyParser = require('body-parser')
  */
 var server = module.exports = express()
 var port = process.env.PORT || 3000
-var db = {}
 
 // parse json requests
 server.use(bodyParser.json('application/json'))
@@ -18,33 +17,8 @@ server.use(bodyParser.json('application/json'))
 /**
  * Routes
  */
-server.post('/notas', function(req, res) {
-  logger.info('POST', req.body)
-  var notaNueva = req.body.nota
-  notaNueva.id = Date.now()
-
-  db[notaNueva.id] = notaNueva
-
-  // prepare response
-  res.set('Content-Type','application/json')
-  res.status(201)
-  res.json({
-    nota: notaNueva
-  })
-})
-
-
-server.get('/notas/:id?', function (req, res) {
-  var id = req.params.id
-  var nota = db[id]
-
-  console.log('ID DE LA NOTA: %s', id)
-
-  res.json({
-    notas: nota
-  })
-
-})
+var notas = require('./lib/notas')
+server.use(notas)
 
 /**
  * Start server if we're not someone else's dependency
