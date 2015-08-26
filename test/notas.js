@@ -27,13 +27,13 @@ function getNote(res, callback) {
 }
 
 function assertions(res, data, callback) {
-  var nota = res.body.notas
+  var nota = res.body.notas || res.body.nota
 
-  expect(nota).to.have.property('title', data.title)
-  expect(nota).to.have.property('description', data.description)
-  expect(nota).to.have.property('type', data.type)
-  expect(nota).to.have.property('body', data.body)
-  expect(nota).to.have.property('id', data.id)
+  expect(nota).to.have.property('title', data.nota.title)
+  expect(nota).to.have.property('description', data.nota.description)
+  expect(nota).to.have.property('type', data.nota.type)
+  expect(nota).to.have.property('body', data.nota.body)
+  expect(nota).to.have.property('id', data.nota.id)
 }
 
 describe('Coleccion de Notas [/notas]', function() {
@@ -48,7 +48,6 @@ describe('Coleccion de Notas [/notas]', function() {
           "body": "soy el cuerpo de json"
         }
       }
-
 
       async.waterfall([
         function (callback) {
