@@ -7,7 +7,7 @@ var request = require('supertest-as-promised'),
 request = request(host)
 
 
-function createNotes(data, callback) {
+function createNote(data, callback) {
   // crear nota nueva
   request
     .post('/notas/')
@@ -38,6 +38,15 @@ function assertions(res, data, callback) {
   callback(null, nota)
 }
 
+function deleteNote(res, callback) {
+  var id = res.body.nota.id
+
+  request
+    .delete('/notas/' + id)
+    .expect(204)
+    .end(callback)
+}
+
 describe('Coleccion de Notas [/notas]', function() {
 
   describe('POST creo una nota', function() {
@@ -53,7 +62,7 @@ describe('Coleccion de Notas [/notas]', function() {
 
       async.waterfall([
         function (callback) {
-          createNotes(data, callback)
+          createNote(data, callback)
         },
         function (res, callback) {
           assertions(res, data, callback)
@@ -76,7 +85,7 @@ describe('Coleccion de Notas [/notas]', function() {
 
       async.waterfall([
         function (callback) {
-          createNotes(data, callback)
+          createNote(data, callback)
         },
         function (res, callback) {
           getNote(res, callback)
@@ -111,7 +120,7 @@ describe('Coleccion de Notas [/notas]', function() {
 
       async.waterfall([
         function (callback) {
-          createNotes(data, callback)
+          createNote(data, callback)
         },
         function (res, callback) {
           getNote(res, callback)
@@ -131,6 +140,40 @@ describe('Coleccion de Notas [/notas]', function() {
         },
         function (res, callback) {
           assertions(res, newData, callback)
+        }
+      ], done)
+    })
+  })
+
+  describe('DELETE de una nota', function () {
+    it('Deberia eliminar una nota', function (done) {
+      var data = {
+        "nota": {
+          "title": "MI NOTA #node #node-pro",
+          "description": "Introduccion a clase",
+          "type": "js",
+          "body": "soy el cuerpo de json"
+        }
+      }
+
+      var id
+
+      async.waterfall([
+        // create a note
+        function (callback) {
+          createNote(data, callback)
+        },
+        // delete this note
+        function (res, callback) {
+          deleteNote(res, callback)
+          id = res.body.nota.id
+        },
+        // check that not exist after
+        function (res, callback) {
+          request
+            .get('/notas/' + id)
+            .expect(400)
+            .end(callback)
         }
       ], done)
     })
