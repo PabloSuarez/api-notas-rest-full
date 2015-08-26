@@ -1,8 +1,8 @@
-var request = require('supertest');
-var api = require('../server.js');
-var host = process.env.API_TEST_HOST || api;
+var request = require('supertest')
+var api = require('../server.js')
+var host = process.env.API_TEST_HOST || api
 
-request = request(host);
+request = request(host)
 
 describe('Coleccion de Notas [/notas]', function() {
 
@@ -15,7 +15,7 @@ describe('Coleccion de Notas [/notas]', function() {
           "type": "js",
           "body": "soy el cuerpo de json"
         }
-      };
+      }
 
       request
         .post('/notas')
@@ -24,26 +24,27 @@ describe('Coleccion de Notas [/notas]', function() {
         .expect(201)
         .expect('Content-Type', /application\/json/)
         .end(function(err, res) {
-          var nota;
+          var nota
 
-          var body = res.body;
-          console.log('body', body);
+          var body = res.body
+          console.log('body', body)
 
           // Nota existe
-          expect(body).to.have.property('nota');
-          nota = body.nota;
+          expect(body).to.have.property('nota')
+          nota = body.nota
 
           // Propiedades
-          expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
-          expect(nota).to.have.property('description', 'Introduccion a clase');
-          expect(nota).to.have.property('type', 'js');
-          expect(nota).to.have.property('body', 'soy el cuerpo de json');
-          expect(nota).to.have.property('id');
+          expect(nota).to.have.property('title', 'Mejorando.la #node-pro')
+          expect(nota).to.have.property('description', 'Introduccion a clase')
+          expect(nota).to.have.property('type', 'js')
+          expect(nota).to.have.property('body', 'soy el cuerpo de json')
+          expect(nota).to.have.property('id')
 
-          done(err);
-        });
-    });
-  });
+          done(err)
+        })
+    })
+  })
+
 
   describe('GET ', function () {
     it('deberia obtener una nota existente', function (done) {
@@ -54,37 +55,35 @@ describe('Coleccion de Notas [/notas]', function() {
           "type": "js",
           "body": "soy el cuerpo de json"
         }
-      };
+      }
 
       // crear nota nueva
       request
-        .post('/notas')
+        .post('/notas/')
         .set('Accept', 'application/json')
         .send(data)
         .expect(201)
         .end(function (err, res) {
           var id = res.body.nota.id
+
           request
           .get('/notas/'+id)
           .expect(200)
           .expect('Content-Type', /application\/json/)
           .end(function (err, res) {
-            var nota = res.body.nota
+            var nota = res.body.notas
 
             // Propiedades
-            expect(nota).to.have.property('title', 'Mejorando.la #node-pro');
-            expect(nota).to.have.property('description', 'Introduccion a clase');
-            expect(nota).to.have.property('type', 'js');
-            expect(nota).to.have.property('body', 'soy el cuerpo de json');
-            expect(nota).to.have.property('id', id);
-
+            expect(nota).to.have.property('title', 'Mejorando.la #node-pro')
+            expect(nota).to.have.property('description', 'Introduccion a clase')
+            expect(nota).to.have.property('type', 'js')
+            expect(nota).to.have.property('body', 'soy el cuerpo de json')
+            expect(nota).to.have.property('id', id)
+            done()
           })
 
         })
-      // send note POST
-      // get
-      // Expect
     })
   })
 
-});
+})

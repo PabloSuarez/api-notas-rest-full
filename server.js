@@ -8,37 +8,49 @@ var bodyParser = require('body-parser')
 /**
  * Locals
  */
-var app = module.exports = express();
-var port = process.env.PORT || 3000;
+var server = module.exports = express()
+var port = process.env.PORT || 3000
+var db = {}
 
 // parse json requests
-app.use(bodyParser.json('application/json'));
+server.use(bodyParser.json('application/json'))
 
 /**
  * Routes
  */
-app.post('/notas', function(req, res) {
-  logger.info('POST', req.body);
+server.post('/notas', function(req, res) {
+  logger.info('POST', req.body)
+  var notaNueva = req.body.nota
+  notaNueva.id = Date.now()
 
-  // manipulate request
-  var notaNueva = req.body.nota;
-  notaNueva.id = '123';
+  db[notaNueva.id] = notaNueva
 
   // prepare response
-  res.set('Content-Type','application/json');
-  res.status(201);
-
-  // send response
+  res.set('Content-Type','application/json')
+  res.status(201)
   res.json({
     nota: notaNueva
-  });
-});
+  })
+})
+
+
+server.get('/notas/:id?', function (req, res) {
+  var id = req.params.id
+  var nota = db[id]
+
+  console.log('ID DE LA NOTA: %s', id)
+
+  res.json({
+    notas: nota
+  })
+
+})
 
 /**
  * Start server if we're not someone else's dependency
  */
 if (!module.parent) {
-  app.listen(port, function() {
-    logger.info('Anotamela API Básico escuchando en http://localhost:%s/', port);
-  });
+  server.listen(port, function() {
+    logger.info('Anotamela API Básico escuchando en http://localhost:%s/', port)
+  })
 }
