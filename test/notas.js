@@ -102,7 +102,7 @@ describe('Coleccion de Notas [/notas]', function() {
       var newData = {
         "nota": {
           "title": "MI NOTA 'Actualizada'",
-          "description": "Introduccion a clase",
+          "description": "Utilizando PUT",
           "type": "js",
           "body": "soy el cuerpo de json"
         }
@@ -130,9 +130,7 @@ describe('Coleccion de Notas [/notas]', function() {
             .end(callback)
         },
         function (res, callback) {
-          // assertions(res, data, callback)
-          console.log('FINAL')
-          done()
+          assertions(res, newData, callback)
         }
       ], done)
     })
