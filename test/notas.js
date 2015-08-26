@@ -1,4 +1,4 @@
-var request = require('supertest')
+var request = require('supertest-as-promised')
 var api = require('../server.js')
 var host = process.env.API_TEST_HOST || api
 
@@ -56,6 +56,7 @@ describe('Coleccion de Notas [/notas]', function() {
           "body": "soy el cuerpo de json"
         }
       }
+      var id = 0;
 
       // crear nota nueva
       request
@@ -63,26 +64,25 @@ describe('Coleccion de Notas [/notas]', function() {
         .set('Accept', 'application/json')
         .send(data)
         .expect(201)
-        .end(function (err, res) {
-          var id = res.body.nota.id
+        .then(function (res) {
+          id = res.body.nota.id
+          return request
+            .get('/notas/'+id)
+            .expect(200)
+            .expect('Content-Type', /application\/json/)
+        }, done)
 
-          request
-          .get('/notas/'+id)
-          .expect(200)
-          .expect('Content-Type', /application\/json/)
-          .end(function (err, res) {
-            var nota = res.body.notas
+        .then(function (res){
+          var nota = res.body.notas
 
-            // Propiedades
-            expect(nota).to.have.property('title', 'Mejorando.la #node-pro')
-            expect(nota).to.have.property('description', 'Introduccion a clase')
-            expect(nota).to.have.property('type', 'js')
-            expect(nota).to.have.property('body', 'soy el cuerpo de json')
-            expect(nota).to.have.property('id', id)
-            done()
-          })
+          // Propiedades
+          expect(nota).to.have.property('title', 'Mejorando.la #node-pro')
+          expect(nota).to.have.property('description', 'Introduccion a clase')
+          expect(nota).to.have.property('type', 'js')
+          expect(nota).to.have.property('body', 'soy el cuerpo de json')
+          expect(nota).to.have.property('id', id)
+        }, done())
 
-        })
     })
   })
 
