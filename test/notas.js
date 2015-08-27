@@ -2,7 +2,8 @@ var request = require('supertest-as-promised'),
     api = require('../server.js'),
     async = require('async'),
     host = process.env.API_TEST_HOST || api,
-    logger = require('../lib/logger')
+    logger = require('../lib/logger'),
+    mongoose = require('mongoose')
 
 request = request(host)
 
@@ -48,6 +49,15 @@ function deleteNote(res, callback) {
 }
 
 describe('Coleccion de Notas [/notas]', function() {
+
+  before(function(done) {
+    mongoose.connect('mongodb://localhost/anotamela-test', done)
+  })
+
+  after(function(done) {
+    mongoose.disconnect(done)
+    mongoose.models = {}
+  })
 
   describe('POST creo una nota', function() {
     it('deberia crear una nota', function(done) {
